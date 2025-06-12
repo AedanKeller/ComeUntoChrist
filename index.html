@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Narrow Path - A Spiritual Journey</title>
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #0f0f23, #1a1a3e, #2d1b69);
+    font-family: 'Georgia', serif;
+    color: white;
+    overflow: hidden;
+}
+
+#gameContainer {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    display: none;
+    justify-content: center;
+    align-items: center;
+}
+
+#gameCanvas {
+    background: radial-gradient(circle at center, #1a1a3e 0%, #0f0f23 100%);
+    border: 3px solid #4a4a8a;
+    border-radius: 15px;
+    box-shadow: 0 0 60px rgba(74, 74, 138, 0.6);
+}
+
+#ui {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 10;
+}
+
+#faithMeter {
+    width: 220px;
+    height: 25px;
+    background: linear-gradient(135deg, #333, #222);
+    border: 2px solid #666;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 15px;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+}
+
+#faithFill {
+    height: 100%;
+    background: linear-gradient(90deg, #FFD700, #FFFF99, #FFFFFF);
+    transition: width 0.3s ease;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+#bossHealthBar {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 320px;
+    height: 30px;
+    background: linear-gradient(135deg, #333, #222);
+    border: 2px solid #666;
+    border-radius: 12px;
+    overflow: hidden;
+    display: none;
+}
+
+#bossHealthFill {
+    height: 100%;
+    background: linear-gradient(90deg, #8B0000, #FF0000, #FF4500);
+    transition: width 0.3s ease;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.4);
+}
+
+#gameOver {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(20, 20, 40, 0.95));
+    padding: 50px;
+    border-radius: 20px;
+    border: 2px solid #8B0000;
+    box-shadow: 0 0 40px rgba(139, 0, 0, 0.5);
+    display: none;
+    z-index: 100;
+    max-width: 500px;
+}
+
+#victoryMessage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(25, 25, 50, 0.9));
+    padding: 50px;
+    border-radius: 20px;
+    border: 3px solid #FFD700;
+    box-shadow: 0 0 50px rgba(255, 215, 0, 0.7);
+    display: none;
+    z-index: 100;
+    max-width: 600px;
+}
+
+#tutorialScreen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(25, 25, 50, 0.9));
+    padding: 50px;
+    border-radius: 20px;
+    border: 3px solid #4a4a8a;
+    box-shadow: 0 0 40px rgba(74, 74, 138, 0.4);
+    display: block;
+    z-index: 100;
+    max-width: 550px;
+}
+
+#storyScreen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.95), rgba(25, 25, 50, 0.95));
+    padding: 50px;
+    border-radius: 20px;
+    border: 3px solid #4a4a8a;
+    box-shadow: 0 0 40px rgba(74, 74, 138, 0.4);
+    display: none;
+    z-index: 100;
+    max-width: 650px;
+}
+
+.game-title {
+    font-size: 36px;
+    color: #FFD700;
+    margin-bottom: 30px;
+    font-weight: bold;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.story-text {
+    font-size: 18px;
+    line-height: 1.8;
+    color: #E8E8E8;
+    margin: 25px 0;
+    font-style: italic;
+}
+
+.controls-section {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 25px;
+    border-radius: 15px;
+    margin: 30px 0;
+    border: 1px solid #4a4a8a;
+    backdrop-filter: blur(5px);
+}
+
+.control-line {
+    margin: 12px 0;
+    font-size: 16px;
+    color: #E8E8E8;
+}
+
+.key {
+    background: linear-gradient(135deg, #4a4a8a, #6a6aaa);
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-weight: bold;
+    margin: 0 4px;
+    color: white;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    font-size: 14px;
+}
+
+.bible-verse {
+    font-style: italic;
+    color: #B8B8D8;
+    font-size: 16px;
+    margin-top: 30px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    border-left: 4px solid #FFD700;
+}
+
+button {
+    background: linear-gradient(135deg, #4a4a8a, #6a6aaa);
+    color: white;
+    border: none;
+    padding: 18px 35px;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    margin: 20px 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+button:hover {
+    background: linear-gradient(135deg, #6a6aaa, #8a8aca);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+}
+
+.primary-button {
+    background: linear-gradient(135deg, #FFD700, #FFA500) !important;
+    color: #1a1a3e !important;
+    font-weight: bold;
+    font-size: 20px;
+    padding: 20px 40px;
+}
+
+.warning-text {
+    color: #FF6B6B;
+    font-size: 17px;
+    margin: 20px 0;
+    font-weight: bold;
+}
+
+.hope-text {
+    color: #90EE90;
+    font-size: 17px;
+    margin: 20px 0;
+    font-weight: bold;
+}
+
+.divine-light {
+    position: absolute;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(255, 215, 0, 0.7) 30%, rgba(255, 255, 255, 0.3) 60%, transparent 100%);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: divine-glow 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes divine-glow {
+    0% { opacity: 0.7; transform: scale(1) rotate(0deg); }
+    100% { opacity: 1; transform: scale(1.2) rotate(5deg); }
+}
+
+.level-transition {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(25, 25, 50, 0.9));
+    padding: 40px;
+    border-radius: 15px;
+    border: 2px solid #4a4a8a;
+    display: none;
+    z-index: 50;
+}
+
+#messageOverlay {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: #FFD700;
+    padding: 15px 25px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-style: italic;
+    display: none;
+    z-index: 20;
+    max-width: 80%;
+    text-align: center;
+}
+</style>
+</head>
+<body>
+
+<div id="tutorialScreen">
+    <h1 class="game-title">The Narrow Path</h1>
+    
+    <div class="story-text">
+        Enter ye in at the strait gate; for wide is the gate, and broad is the way, that leadeth to destruction...<br>
+        But strait is the gate, and narrow is the way, which leadeth unto life.
+    </div>
+    
+    <div class="warning-text">
+        You will face 4 trials that test your faith in Jesus Christ.
+    </div>
+    
+    <div class="hope-text">
+        Remember: Through the Atonement of Christ, all mankind may be saved.
+    </div>
+    
+    <div class="controls-section">
+        <div class="control-line"><span class="key">WASD</span> or <span class="key">Arrow Keys</span> - Walk the narrow path</div>
+        <div class="control-line"><span class="key">SPACEBAR</span> - Exercise faith in Christ</div>
+    </div>
+    
+    <div class="bible-verse">
+        "And now, my sons, remember, remember that it is upon the rock of our Redeemer, who is Christ, the Son of God, that ye must build your foundation."<br>
+        — Helaman 5:12
+    </div>
+    
+    <button class="primary-button" onclick="showStory()">
+        Begin Your Journey
+    </button>
+</div>
+
+<div id="storyScreen">
+    <h2 style="color: #FFD700; margin-bottom: 25px;">A Test of Faith</h2>
+    
+    <div class="story-text">
+        As a disciple of Jesus Christ, you will face adversities designed to test your faith.<br><br>
+        
+        The adversary seeks to destroy your testimony through:<br>
+        <strong>Doubt, Fear, Temptation, and Pride.</strong><br><br>
+        
+        But there awaits a final enemy—one that no mortal can overcome alone.<br>
+        This represents sin and the necessity of a Savior.<br><br>
+        
+        <span style="color: #FF6B6B;">When facing impossible trials, remember:</span><br>
+        <span style="color: #90EE90;">Jesus Christ has already won the victory through His infinite Atonement.</span>
+    </div>
+    
+    <div class="bible-verse">
+        "Come unto me, all ye that labour and are heavy laden, and I will give you rest."<br>
+        — Matthew 11:28
+    </div>
+    
+    <button class="primary-button" onclick="startGame()">
+        Walk the Path
+    </button>
+</div>
+
+<div id="gameContainer">
+<canvas id="gameCanvas" width="900" height="650"></canvas>
+
+<div id="ui">
+    <div style="margin-bottom: 8px; color: #FFD700; font-weight: bold;">Faith in Christ</div>
+    <div id="faithMeter">
+        <div id="faithFill"></div>
+    </div>
+    <div style="color: #E8E8E8;">
+        <div>Trial: <span id="level">1</span> of 4</div>
+        <div>Testimony Points: <span id="score">0</span></div>
+    </div>
+</div>
+
+<div id="bossHealthBar">
+    <div id="bossHealthFill"></div>
+</div>
+
+<div id="levelTransition" class="level-transition">
+    <h3 id="transitionTitle" style="color: #FFD700;">Trial Complete</h3>
+    <p id="transitionMessage">Your faith in Christ has overcome this challenge.</p>
+</div>
+
+<div id="messageOverlay"></div>
+
+<div id="gameOver">
+    <h2 style="color: #FF6B6B;">Overcome by Adversity</h2>
+    <p id="defeatMessage">Even the faithful sometimes feel overwhelmed...</p>
+    <div class="bible-verse" style="color: #B8B8D8; margin: 25px 0;">
+        "And if men come unto me I will show unto them their weakness... then will I make weak things become strong unto them."<br>
+        — Ether 12:27
+    </div>
+    <button onclick="restartGame()">Try Again with Faith</button>
+</div>
+
+<div id="victoryMessage">
+    <h2 style="color: #FFD700; margin-bottom: 20px;">Victory Through Christ's Atonement!</h2>
+    <div class="story-text" style="color: #E8E8E8;">
+        Some battles cannot be won through our efforts alone.<br>
+        <strong>Jesus Christ stepped forth as your Savior and Redeemer.</strong><br><br>
+        
+        This is the heart of the Plan of Salvation:<br>
+        We cannot overcome sin and death by ourselves.<br>
+        But Jesus Christ, through His infinite Atonement, has conquered all.<br><br>
+        
+        <span style="color: #90EE90;">In our weakness, His grace is sufficient.</span><br>
+        <span style="color: #FFD700;">In our defeat, His victory becomes ours.</span>
+    </div>
+    <div class="bible-verse" style="margin: 30px 0;">
+        "But behold, the righteous, the saints of the Holy One of Israel, they who have believed in the Holy One of Israel, they who have endured the crosses of the world... they shall inherit the kingdom of God."<br>
+        — 2 Nephi 9:18
+    </div>
+    <button onclick="restartGame()">Continue Your Journey</button>
+</div>
+</div>
+
+<script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+let gameState = {
+    player: {
+        x: 120,
+        y: 325,
+        radius: 22,
+        health: 100,
+        maxHealth: 100,
+        speed: 4.5,
+        color: '#4CAF50',
+        swordAngle: 0,
+        isAttacking: false,
+        attackCooldown: 0,
+        glowing: false
+    },
+    boss: null,
+    level: 1,
+    score: 0,
+    gameRunning: true,
+    divineIntervention: false,
+    savior: null,
+    keys: {},
+    finalBossDefeated: false,
+    transitionTimer: 0,
+    messageTimer: 0,
+    currentMessage: ""
+};
+
+const levelMessages = {
+    1: "Doubt seeks to destroy your testimony... Hold fast to the iron rod.",
+    2: "Fear whispers that Christ cannot save... But perfect love casteth out fear.",
+    3: "Temptation appears overwhelming... Remember, God will provide a way to escape.",
+    4: "This enemy represents spiritual death—beyond any mortal power to overcome."
+};
+
+const defeatMessages = {
+    1: "Doubt has clouded your vision, but Christ's light remains constant.",
+    2: "Fear has overwhelmed you, but the Savior invites you to come unto Him.",
+    3: "Temptation has led you astray, but through repentance, mercy is available.",
+    4: "You face an enemy no mortal can defeat. This is why the Father sent His Son—to do what we cannot do for ourselves."
+};
+
+class Boss {
+    constructor(level) {
+        this.level = level;
+        this.x = 700;
+        this.y = 325;
+        this.baseHealth = [120, 180, 200, 600][level - 1];
+        this.health = this.baseHealth;
+        this.maxHealth = this.health;
+        this.speed = [2, 2.5, 3, 1.5][level - 1];
+        this.attackDamage = [15, 20, 22, 35][level - 1];
+        this.attackCooldown = 0;
+        this.attackRate = [90, 75, 70, 45][level - 1];
+        this.size = [35, 40, 45, 70][level - 1];
+        this.defeated = false;
+        this.lastAttackTime = 0;
+        
+        this.setAppearance();
+    }
+    
+    setAppearance() {
+        const appearances = [
+            { color: '#8B4513', shape: 'square', name: 'Doubt' },
+            { color: '#FF4500', shape: 'triangle', name: 'Fear' },
+            { color: '#8B0000', shape: 'diamond', name: 'Temptation' },
+            { color: '#2F004F', shape: 'star', name: 'Spiritual Death' }
+        ];
+        
+        Object.assign(this, appearances[this.level - 1]);
+    }
+    
+    update() {
+        if (this.defeated) return;
+        
+        const dx = gameState.player.x - this.x;
+        const dy = gameState.player.y - this.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        // Movement with some variation
+        if (distance > 0) {
+            const moveX = (dx / distance) * this.speed;
+            const moveY = (dy / distance) * this.speed;
+            
+            this.x += moveX + Math.sin(Date.now() * 0.003) * 0.5;
+            this.y += moveY + Math.cos(Date.now() * 0.002) * 0.5;
+        }
+        
+        // Keep boss on screen
+        this.x = Math.max(this.size, Math.min(canvas.width - this.size, this.x));
+        this.y = Math.max(this.size, Math.min(canvas.height - this.size, this.y));
+        
+        // Attack logic
+        this.attackCooldown--;
+        if (this.attackCooldown <= 0 && distance < 80) {
+            this.attack();
+            this.attackCooldown = this.attackRate;
+        }
+    }
+    
+    attack() {
+        if (gameState.divineIntervention) return;
+        
+        gameState.player.health -= this.attackDamage;
+        
+        // Screen shake effect for dramatic attacks
+        if (this.level === 4) {
+            this.screenShake();
+        }
+        
+        if (gameState.player.health <= 0) {
+            gameState.player.health = 0;
+            
+            if (this.level === 4) {
+                // Final boss triggers divine intervention after a delay
+                setTimeout(() => {
+                    this.triggerDivineIntervention();
+                }, 1500);
+            } else {
+                this.endGame();
+            }
+        }
+    }
+    
+    screenShake() {
+        const canvas = document.getElementById('gameCanvas');
+        canvas.style.transform = 'translate(' + (Math.random() * 6 - 3) + 'px, ' + (Math.random() * 6 - 3) + 'px)';
+        setTimeout(() => {
+            canvas.style.transform = 'translate(0, 0)';
+        }, 100);
+    }
+    
+    triggerDivineIntervention() {
+        gameState.divineIntervention = true;
+        gameState.player.health = gameState.player.maxHealth;
+        gameState.player.glowing = true;
+        gameState.gameRunning = true;
+        
+        document.getElementById('gameOver').style.display = 'none';
+        
+        // Create the Savior
+        gameState.savior = {
+            x: 50,
+            y: 325,
+            radius: 28,
+            color: '#FFD700',
+            speed: 3,
+            attackCooldown: 0,
+            battleTime: 0,
+            swordAngle: 0,
+            isAttacking: false,
+            glowIntensity: 0
+        };
+        
+        this.createDivineLight();
+        this.showMessage("Behold, Jesus Christ stands beside you in the final battle!", 4000);
+    }
+    
+    createDivineLight() {
+        // Removed the yellow orb effects - divine intervention is now more subtle
+    }
+    
+    takeDamage(damage) {
+        this.health -= damage;
+        if (this.health <= 0) {
+            this.health = 0;
+            this.defeated = true;
+            gameState.score += this.level * 150;
+            
+            if (this.level === 4) {
+                gameState.finalBossDefeated = true;
+                setTimeout(() => {
+                    this.showVictory();
+                }, 2500);
+            } else {
+                this.nextLevel();
+            }
+        }
+    }
+    
+    showVictory() {
+        document.getElementById('victoryMessage').style.display = 'block';
+        gameState.gameRunning = false;
+    }
+    
+    nextLevel() {
+        gameState.transitionTimer = 180; // 3 seconds at 60fps
+        const messages = [
+            "Faith in Christ has overcome doubt. The truth shall make you free.",
+            "Love has conquered fear. Trust in the Lord with all your heart.",
+            "Righteousness has defeated temptation. The final trial awaits—one beyond mortal strength."
+        ];
+        
+        document.getElementById('transitionTitle').textContent = `Trial ${gameState.level} Complete`;
+        document.getElementById('transitionMessage').textContent = messages[gameState.level - 1];
+        document.getElementById('levelTransition').style.display = 'block';
+        
+        setTimeout(() => {
+            gameState.level++;
+            gameState.boss = new Boss(gameState.level);
+            gameState.player.health = gameState.player.maxHealth;
+            document.getElementById('levelTransition').style.display = 'none';
+            
+            // Show level message
+            this.showMessage(levelMessages[gameState.level], 3000);
+        }, 3000);
+    }
+    
+    showMessage(text, duration) {
+        gameState.currentMessage = text;
+        gameState.messageTimer = duration / 16.67; // Convert ms to frames
+        document.getElementById('messageOverlay').style.display = 'block';
+        document.getElementById('messageOverlay').textContent = text;
+    }
+    
+    endGame() {
+        const message = defeatMessages[this.level];
+        document.getElementById('defeatMessage').textContent = message;
+        document.getElementById('gameOver').style.display = 'block';
+        gameState.gameRunning = false;
+    }
+    
+    draw() {
+        if (this.defeated) return;
+        
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        
+        // Dark aura for final boss
+        if (this.level === 4) {
+            ctx.shadowColor = this.color;
+            ctx.shadowBlur = 25;
+            
+            // Pulsing dark energy
+            const pulse = Math.sin(Date.now() * 0.005) * 0.3 + 0.7;
+            ctx.globalAlpha = pulse;
+        }
+        
+        ctx.fillStyle = this.color;
+        
+        switch(this.shape) {
+            case 'square':
+                ctx.fillRect(-this.size/2, -this.size/2, this.size, this.size);
+                break;
+            case 'triangle':
+                ctx.beginPath();
+                ctx.moveTo(0, -this.size/2);
+                ctx.lineTo(-this.size/2, this.size/2);
+                ctx.lineTo(this.size/2, this.size/2);
+                ctx.closePath();
+                ctx.fill();
+                break;
+            case 'diamond':
+                ctx.beginPath();
+                ctx.moveTo(0, -this.size/2);
+                ctx.lineTo(this.size/2, 0);
+                ctx.lineTo(0, this.size/2);
+                ctx.lineTo(-this.size/2, 0);
+                ctx.closePath();
+                ctx.fill();
+                break;
+            case 'star':
+                this.drawStar(0, 0, 5, this.size/2, this.size/4);
+                break;
+        }
+        
+        ctx.restore();
+    }
+    
+    drawStar(cx, cy, spikes, outerRadius, innerRadius) {
+        let rot = Math.PI / 2 * 3;
+        const step = Math.PI / spikes;
+        
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - outerRadius);
+        
+        for (let i = 0; i < spikes; i++) {
+            let x = cx + Math.cos(rot) * outerRadius;
+            let y = cy + Math.sin(rot) * outerRadius;
+            ctx.lineTo(x, y);
+            rot += step;
+            
+            x = cx + Math.cos(rot) * innerRadius;
+            y = cy + Math.sin(rot) * innerRadius;
+            ctx.lineTo(x, y);
+            rot += step;
+        }
+        
+        ctx.lineTo(cx, cy - outerRadius);
+        ctx.closePath();
+        ctx.fill();
+    }
+}
+
+// Input handling - single global event listeners
+let keyListenersAdded = false;
+
+function setupKeyListeners() {
+    if (keyListenersAdded) return;
+    
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
+    keyListenersAdded = true;
+}
+
+function handleKeyDown(e) {
+    if (gameState && gameState.keys) {
+        gameState.keys[e.key.toLowerCase()] = true;
+    }
+}
+
+function handleKeyUp(e) {
+    if (gameState && gameState.keys) {
+        gameState.keys[e.key.toLowerCase()] = false;
+    }
+}
+
+function updatePlayer() {
+    if (!gameState.gameRunning) return;
+    
+    if (gameState.player.attackCooldown > 0) {
+        gameState.player.attackCooldown--;
+    }
+    
+    if (gameState.player.isAttacking) {
+        gameState.player.swordAngle += 0.35;
+        if (gameState.player.swordAngle >= Math.PI) {
+            gameState.player.isAttacking = false;
+            gameState.player.swordAngle = 0;
+        }
+    }
+    
+    // Movement
+    const speed = gameState.player.speed;
+    if (gameState.keys['w'] || gameState.keys['arrowup']) {
+        gameState.player.y = Math.max(gameState.player.radius, gameState.player.y - speed);
+    }
+    if (gameState.keys['s'] || gameState.keys['arrowdown']) {
+        gameState.player.y = Math.min(canvas.height - gameState.player.radius, gameState.player.y + speed);
+    }
+    if (gameState.keys['a'] || gameState.keys['arrowleft']) {
+        gameState.player.x = Math.max(gameState.player.radius, gameState.player.x - speed);
+    }
+    if (gameState.keys['d'] || gameState.keys['arrowright']) {
+        gameState.player.x = Math.min(canvas.width - gameState.player.radius, gameState.player.x + speed);
+    }
+    
+    // Attack
+    if (gameState.keys[' '] && gameState.boss && !gameState.boss.defeated && 
+        gameState.player.attackCooldown <= 0 && !gameState.player.isAttacking) {
+        
+        gameState.player.isAttacking = true;
+        gameState.player.swordAngle = 0;
+        gameState.player.attackCooldown = 25;
+        
+        const dx = gameState.boss.x - gameState.player.x;
+        const dy = gameState.boss.y - gameState.player.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        
+        if (distance < 110) {
+            const damage = gameState.divineIntervention ? 120 : 40;
+            gameState.boss.takeDamage(damage);
+        }
+    }
+}
+
+function updateSavior() {
+    if (!gameState.savior || !gameState.boss) return;
+    
+    gameState.savior.battleTime++;
+    gameState.savior.glowIntensity = Math.sin(gameState.savior.battleTime * 0.1) * 0.3 + 0.7;
+    
+    if (gameState.savior.attackCooldown > 0) {
+        gameState.savior.attackCooldown--;
+    }
+    
+    if (gameState.savior.isAttacking) {
+        gameState.savior.swordAngle += 0.4;
+        if (gameState.savior.swordAngle >= Math.PI) {
+            gameState.savior.isAttacking = false;
+            gameState.savior.swordAngle = 0;
+        }
+    }
+    
+    // Strategic movement around the boss
+    const angle = gameState.savior.battleTime * 0.04;
+    const targetX = gameState.boss.x + Math.cos(angle) * 160;
+    const targetY = gameState.boss.y + Math.sin(angle) * 120;
+    
+    const dx = targetX - gameState.savior.x;
+    const dy = targetY - gameState.savior.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    
+    if (distance > 15) {
+        gameState.savior.x += (dx / distance) * gameState.savior.speed;
+        gameState.savior.y += (dy / distance) * gameState.savior.speed;
+    }
+    
+    const bossDistance = Math.sqrt(
+        Math.pow(gameState.boss.x - gameState.savior.x, 2) + 
+        Math.pow(gameState.boss.y - gameState.savior.y, 2)
+    );
+    
+    if (bossDistance < 110 && gameState.savior.attackCooldown <= 0 && !gameState.savior.isAttacking) {
+        gameState.savior.isAttacking = true;
+        gameState.savior.swordAngle = 0;
+        gameState.savior.attackCooldown = 15;
+        
+        gameState.boss.takeDamage(60);
+    }
+}
+
+function drawPlayer() {
+    ctx.save();
+    
+    if (gameState.player.glowing) {
+        ctx.shadowColor = '#FFD700';
+        ctx.shadowBlur = 20;
+    }
+    
+    ctx.fillStyle = gameState.player.color;
+    ctx.beginPath();
+    ctx.arc(gameState.player.x, gameState.player.y, gameState.player.radius, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw sword when attacking
+    if (gameState.player.isAttacking && gameState.boss && !gameState.boss.defeated) {
+        const dx = gameState.boss.x - gameState.player.x;
+        const dy = gameState.boss.y - gameState.player.y;
+        const angleToTarget = Math.atan2(dy, dx);
+        
+        drawSword(gameState.player.x, gameState.player.y, 
+                 angleToTarget + gameState.player.swordAngle, 
+                 gameState.divineIntervention ? '#FFD700' : '#C0C0C0');
+    }
+    
+    ctx.restore();
+}
+
+function drawSword(x, y, angle, color) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.rotate(angle);
+    
+    if (color === '#FFD700') {
+        ctx.shadowColor = '#FFD700';
+        ctx.shadowBlur = 15;
+    }
+    
+    // Sword blade
+    ctx.fillStyle = color;
+    ctx.fillRect(25, -3, 30, 6);
+    
+    // Sword handle
+    ctx.fillStyle = '#8B4513';
+    ctx.fillRect(20, -5, 10, 10);
+    
+    // Divine glow effect for golden sword
+    if (color === '#FFD700') {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.fillRect(27, -1, 25, 2);
+    }
+    
+    ctx.restore();
+}
+
+function drawSavior() {
+    if (!gameState.savior) return;
+    
+    ctx.save();
+    
+    // Divine halo
+    ctx.strokeStyle = '#FFD700';
+    ctx.lineWidth = 4;
+    ctx.shadowColor = '#FFD700';
+    ctx.shadowBlur = 20;
+    ctx.globalAlpha = gameState.savior.glowIntensity;
+    ctx.beginPath();
+    ctx.arc(gameState.savior.x, gameState.savior.y - 40, 25, 0, Math.PI * 2);
+    ctx.stroke();
+    
+    // Savior body with intense glow
+    ctx.shadowColor = '#FFD700';
+    ctx.shadowBlur = 25;
+    ctx.fillStyle = gameState.savior.color;
+    ctx.beginPath();
+    ctx.arc(gameState.savior.x, gameState.savior.y, gameState.savior.radius, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Draw savior's sword when attacking
+    if (gameState.savior.isAttacking && gameState.boss && !gameState.boss.defeated) {
+        const dx = gameState.boss.x - gameState.savior.x;
+        const dy = gameState.boss.y - gameState.savior.y;
+        const angleToTarget = Math.atan2(dy, dx);
+        
+        drawSword(gameState.savior.x, gameState.savior.y, 
+                 angleToTarget + gameState.savior.swordAngle, '#FFD700');
+    }
+    
+    ctx.restore();
+}
+
+function updateUI() {
+    const healthPercent = (gameState.player.health / gameState.player.maxHealth) * 100;
+    document.getElementById('faithFill').style.width = healthPercent + '%';
+    document.getElementById('level').textContent = gameState.level;
+    document.getElementById('score').textContent = gameState.score;
+    
+    if (gameState.boss && !gameState.boss.defeated) {
+        document.getElementById('bossHealthBar').style.display = 'block';
+        const bossHealthPercent = (gameState.boss.health / gameState.boss.maxHealth) * 100;
+        document.getElementById('bossHealthFill').style.width = bossHealthPercent + '%';
+    } else {
+        document.getElementById('bossHealthBar').style.display = 'none';
+    }
+    
+    // Update message overlay
+    if (gameState.messageTimer > 0) {
+        gameState.messageTimer--;
+        if (gameState.messageTimer <= 0) {
+            document.getElementById('messageOverlay').style.display = 'none';
+        }
+    }
+}
+
+function gameLoop() {
+    if (!gameState.gameRunning && gameState.transitionTimer <= 0) {
+        requestAnimationFrame(gameLoop);
+        return;
+    }
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Handle level transition timing
+    if (gameState.transitionTimer > 0) {
+        gameState.transitionTimer--;
+    }
+    
+    updatePlayer();
+    if (gameState.boss) {
+        gameState.boss.update();
+    }
+    updateSavior();
+    
+    drawPlayer();
+    if (gameState.boss) {
+        gameState.boss.draw();
+    }
+    drawSavior();
+    
+    updateUI();
+    
+    requestAnimationFrame(gameLoop);
+}
+
+function restartGame() {
+    // Clear all key states first to prevent speed issues
+    gameState.keys = {};
+    
+    // Clear any stuck key events
+    document.removeEventListener('keydown', arguments.callee);
+    document.removeEventListener('keyup', arguments.callee);
+    
+    // Reset all game state
+    gameState = {
+        player: {
+            x: 120,
+            y: 325,
+            radius: 22,
+            health: 100,
+            maxHealth: 100,
+            speed: 4.5,
+            color: '#4CAF50',
+            swordAngle: 0,
+            isAttacking: false,
+            attackCooldown: 0,
+            glowing: false
+        },
+        boss: null,
+        level: 1,
+        score: 0,
+        gameRunning: true,
+        divineIntervention: false,
+        savior: null,
+        keys: {},
+        finalBossDefeated: false,
+        transitionTimer: 0,
+        messageTimer: 0,
+        currentMessage: ""
+    };
+    // Re-establish clean event listeners
+    document.addEventListener('keydown', (e) => {
+        if (gameState.keys) {
+            gameState.keys[e.key.toLowerCase()] = true;
+        }
+    });
+
+    document.addEventListener('keyup', (e) => {
+        if (gameState.keys) {
+            gameState.keys[e.key.toLowerCase()] = false;
+        }
+    });
+    
+    // Hide all overlays
+    document.getElementById('gameOver').style.display = 'none';
+    document.getElementById('victoryMessage').style.display = 'none';
+    document.getElementById('levelTransition').style.display = 'none';
+    document.getElementById('messageOverlay').style.display = 'none';
+    document.getElementById('gameContainer').style.display = 'none';
+    document.getElementById('storyScreen').style.display = 'none';
+    document.getElementById('tutorialScreen').style.display = 'block';
+    
+    // Remove any divine light effects
+    const lights = document.querySelectorAll('.divine-light');
+    lights.forEach(light => light.remove());
+}
+
+function showStory() {
+    document.getElementById('tutorialScreen').style.display = 'none';
+    document.getElementById('storyScreen').style.display = 'block';
+}
+
+function startGame() {
+    document.getElementById('storyScreen').style.display = 'none';
+    document.getElementById('gameContainer').style.display = 'flex';
+    
+    // Ensure key listeners are set up
+    setupKeyListeners();
+    
+    // Create first boss and show initial message
+    gameState.boss = new Boss(gameState.level);
+    gameState.gameRunning = true;
+    gameState.boss.showMessage(levelMessages[gameState.level], 3000);
+    
+    gameLoop();
+}
+</script>
+</body>
+</html>
